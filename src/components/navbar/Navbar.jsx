@@ -73,10 +73,13 @@ export default function Navbar() {
   return (
     <>
       <AppBar
-        position="static"
+        position="sticky"
         sx={{
-          backgroundColor: "#fff",
-          boxShadow: "0px 2px 10px rgba(0,0,0,0.05)",
+          top: 0,
+          left: 0,
+          width: "100%",
+          backgroundColor: "transparent",
+          boxShadow: "none",
           px: 2,
           fontFamily,
         }}
@@ -236,6 +239,7 @@ export default function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+
       <Drawer
         anchor="right"
         open={mobileOpen}
