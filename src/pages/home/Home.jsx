@@ -10,6 +10,7 @@ import ElectronicImg from "../../assets/images/electronic.jpeg";
 import "swiper/css";
 import "swiper/css/pagination";
 import Brands from "../../components/brands/Brands";
+import Categories from "../../components/categories/Categories";
 
 export default function Home() {
   const images = [ElectronicImg, AccessoriesImg, ClothesImg, PhoneImg];
@@ -55,6 +56,7 @@ export default function Home() {
       </Swiper>
 
       <Brands />
+      <Categories />
     </>
   );
 }

@@ -33,8 +33,8 @@ export default function Brands() {
 
   return (
     <Box py={3}>
-      <Typography variant='h2' component="h2">Brands</Typography>
-      <Grid container spacing={2} mt={2}>
+      <Typography variant='h2' component="h2" mt={3}>Brands</Typography>
+      <Grid container spacing={2} mt={5}>
         {brands.map((brand, index) => (
           <Grid key={index} item xs={12} sm={6} md={4} lg={3}>
 
