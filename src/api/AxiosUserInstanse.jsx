@@ -1,9 +1,11 @@
-import React from 'react'
+import axios from "axios";
 
-export default function AxiosUserInstanse() {
-  return (
-    <>
-      <h1>Axios User Instance</h1> 
-    </>
-  )
-}
+const token = localStorage.getItem("token");
+const AxiosUserInstance = axios.create({
+  baseURL: "https://kashop1.runasp.net/api",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
+export default AxiosUserInstance;

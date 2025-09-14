@@ -1,9 +1,8 @@
-import React from 'react'
+import axios from "axios";
 
-export default function AxiosInstance() {
-  return (
-    <>
-      <h1>Axios Instance Page</h1> 
-    </>
-  )
-}
+const AxiosInstance = axios.create({
+  baseURL: "https://kashop1.runasp.net/api",
+
+});
+
+export default AxiosInstance;
