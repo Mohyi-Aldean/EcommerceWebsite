@@ -12,6 +12,7 @@ import Cart from "./pages/cart/Cart";
 import AboutUs from "./pages/aboutUs/AboutUs";
 import Products from "./pages/products/Products";
 import ProtectedRouter from "./components/protected/ProtectedRouter";
+import Brands from "./components/brands/Brands";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
       },
       { path: "aboutUs", element: <AboutUs /> },
       { path: "products", element: <Products /> },
+      {path: "brands", element: <Brands />},
     ],
   },
 ]);
