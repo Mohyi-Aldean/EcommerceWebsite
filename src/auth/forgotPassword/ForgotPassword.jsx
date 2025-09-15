@@ -32,7 +32,6 @@ export default function ForgotPassword() {
     try {
       setLoading(true);
 
-      // ✅ استخدام الدالة من UserService.jsx
       await forgotPassword(email);
 
       toast.success("Verification code sent to your email!", {

@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
+import AxiosUserInstance from "../../api/AxiosUserInstanse";
 import AxiosInstance from "../../api/AxiosInstance";
 import { useParams } from "react-router-dom";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography, Button } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 export default function ProductsDetails() {
-
   const { id } = useParams();
 
   const FetchProductDetails = async () => {
@@ -16,35 +16,37 @@ export default function ProductsDetails() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["product", id],
     queryFn: FetchProductDetails,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
+
+const addToCart = async (id) => {
+  try {
+    const response = await AxiosUserInstance.post(`/Customer/Carts`, { productId: id });
+    console.log(response.data);
+    alert("✅ " + response.data.message);
+  } catch (error) {
+    console.error("Error adding product to cart:", error);
+    alert("❌ Failed to add product to cart.");
+  }
+};
 
   if (isLoading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
         <CircularProgress />
       </Box>
     );
   }
+
   if (isError) {
-    return (      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
         <Typography variant="h6" color="error">
           Error: {error.message}
         </Typography>
       </Box>
     );
   }
-
 
   return (
     <Box py={3} px={2}>
@@ -71,7 +73,10 @@ export default function ProductsDetails() {
       <Typography variant="body1" component="p">
         {data.description}
       </Typography>
+
+      <Button variant="contained" color="primary" onClick={() => addToCart(data.id)}>
+        Add to Cart
+      </Button>
     </Box>
-  
-  )
+  );
 }
