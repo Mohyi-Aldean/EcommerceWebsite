@@ -5,14 +5,14 @@ import { Box, Grid, Card, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Categories() {
- const FetchBrands = async () => {
-    const response = await AxiosInstance.get(`/Customer/Brands`);
+ const FetchCategories = async () => {
+    const response = await AxiosInstance.get(`/Customer/Categories `);
     return response.data;
   };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["brands"],
-    queryFn: FetchBrands,
+    queryFn: FetchCategories,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 

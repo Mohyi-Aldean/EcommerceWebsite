@@ -11,6 +11,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import Brands from "../../components/brands/Brands";
 import Categories from "../../components/categories/Categories";
+import Products from "../../components/products/Products";
 
 export default function Home() {
   const images = [ElectronicImg, AccessoriesImg, ClothesImg, PhoneImg];
@@ -57,6 +58,7 @@ export default function Home() {
 
       <Brands />
       <Categories />
+      <Products />
     </>
   );
 }
