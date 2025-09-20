@@ -1,5 +1,5 @@
 import React from "react";
-import AxiosUserInstanse from "../../api/AxiosUserInstanse";
+import AxiosUserInstance from "../../api/AxiosUserInstance";
 import AxiosInstance from "../../api/AxiosInstance";
 
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import {
   Table,
   TableRow,
   TableCell,
+  Button,
 } from "@mui/material";
 
 export default function Cart() {
@@ -54,11 +55,9 @@ export default function Cart() {
     );
   }
 
-
   const removeItem = async (productId) => {
     try {
-      await AxiosUserInstanse.delete(`/Customer/Carts/${productId}`);
-     
+      await AxiosUserInstance.delete(`/Customer/Carts/${productId}`);
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
     }
@@ -66,7 +65,7 @@ export default function Cart() {
 
   const clearCart = async () => {
     try {
-      await AxiosUserInstanse.delete(`/Customer/Carts/clear`);
+      await AxiosUserInstance.delete(`/Customer/Carts/clear`);
     } catch (error) {
       console.error("Failed to clear cart:", error);
     }
@@ -75,6 +74,22 @@ export default function Cart() {
   if (response.status == 200) {
     window.location.reload();
   }
+
+  const incremantItem = async (productId) => {
+    try {
+      await AxiosUserInstance.post(`i/Customer/Carts/increment/${productId}`, {});
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+    }
+  };
+
+  const decremantItem = async (productId) => {
+    try {
+      await AxiosUserInstance.post(`/Customer/Carts/decrement/${productId}`, {});
+    } catch (error) {
+      console.error("Failed to decrement item in cart:", error);
+    }
+  };
 
   return (
     <TableContainer>
@@ -90,11 +105,20 @@ export default function Cart() {
           {data.items.map((item) => (
             <TableRow>
               <TableCell>{item.productName}</TableCell>
-              <TableCell>{item.quantity}</TableCell>
+              <TableCell>
+                  <Button onClick={() => decremantItem(item.productId)}>-</Button>
+                {item.count}{" "}
+                <Button onClick={() => incremantItem(item.productId)}>+</Button>
+              </TableCell>
               <TableCell>{item.price}</TableCell>
               <TableCell>{item.totalPrice}</TableCell>
               <TableCell>
-                <button color="error" onClick={() => removeItem(item.productId)}>Remove</button>
+                <button
+                  color="error"
+                  onClick={() => removeItem(item.productId)}
+                >
+                  Remove
+                </button>
               </TableCell>
             </TableRow>
           ))}
@@ -112,11 +136,10 @@ export default function Cart() {
           <TableRow>
             <TableCell colSpan={5} align="right">
               <button variant="contained" color="error" onClick={clearCart}>
-                Remove All 
+                Remove All
               </button>
             </TableCell>
           </TableRow>
-
         </TableBody>
       </Table>
     </TableContainer>

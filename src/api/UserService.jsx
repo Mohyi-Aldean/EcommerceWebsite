@@ -1,5 +1,5 @@
 import AxiosInstance from "./AxiosInstance";
-import AxiosUserInstance from "./AxiosUserInstanse";
+import AxiosUserInstance from "./AxiosUserInstance";
 
 export const loginUser = (email, password) => {
   return AxiosInstance.post("/Identity/Account/Login", { email, password });

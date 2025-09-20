@@ -50,7 +50,7 @@ const FadeSlideTransition = React.forwardRef(function FadeSlideTransition(
   );
 });
 
-export default function Navbar() {
+export default function Navbar({ isLoggedIn }) {
   const [anchorElProduct, setAnchorElProduct] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -215,20 +215,37 @@ export default function Navbar() {
               </IconButton>
             )}
 
-            <IconButton
-              component={NavLink}
-              to="/login"
-              sx={{ color: "#555", "&:hover": { color: "#000" } }}
-            >
-              <PersonOutlineIcon />
-            </IconButton>
-            <IconButton
-              component={NavLink}
-              to="/cart"
-              sx={{ color: "#555", "&:hover": { color: "#000" } }}
-            >
-              <ShoppingBagOutlinedIcon />
-            </IconButton>
+            {isLoggedIn ? (
+              <IconButton
+                component={NavLink}
+                to="/cart"
+                sx={{ color: "#555", "&:hover": { color: "#000" } }}
+              >
+                <ShoppingBagOutlinedIcon />
+              </IconButton>
+            ) : (
+              <Button
+                component={NavLink}
+                to="/login"
+                sx={{
+                  color: "#555",
+                  textTransform: "none",
+                  fontFamily,
+                  fontWeight: 500,
+                  border: "1px solid #ddd",
+                  borderRadius: "20px",
+                  px: 2,
+                  "&:hover": {
+                    backgroundColor: "#f5f5f5",
+                    color: "#111",
+                  },
+                }}
+              >
+                Login
+              </Button>
+            )}
+
+            {/* منيو الموبايل */}
             <IconButton
               edge="end"
               sx={{ display: { xs: "flex", md: "none" }, color: "#000" }}

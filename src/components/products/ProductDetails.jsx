@@ -1,5 +1,5 @@
 import React from 'react';
-import AxiosUserInstance from "../../api/AxiosUserInstanse";
+import AxiosUserInstance from "../../api/AxiosUserInstance";
 import AxiosInstance from "../../api/AxiosInstance";
 import { useParams } from "react-router-dom";
 import { Box, CircularProgress, Typography, Button } from "@mui/material";
