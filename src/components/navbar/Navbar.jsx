@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect, forwardRef } from "react";
 import {
   AppBar,
   Toolbar,
@@ -19,17 +19,19 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-
 import { NavLink, useNavigate } from "react-router-dom";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+
+import { ThemeContext } from "../../theme/ThemeContext.jsx";
 
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/500.css";
@@ -38,14 +40,10 @@ import "@fontsource/poppins/700.css";
 
 const fontFamily = "'Poppins', sans-serif";
 
-// مكوّن يجمع بين Fade + Slide
-const FadeSlideTransition = React.forwardRef(function FadeSlideTransition(
-  props,
-  ref
-) {
+const FadeSlideTransition = forwardRef(function FadeSlideTransition(props, ref) {
   return (
     <Fade in={props.in} timeout={400}>
-      <Slide direction="left" ref={ref} {...props} timeout={400} />
+      <Slide direction="left" ref={ref} {...props} timeout={800} />
     </Fade>
   );
 });
@@ -55,8 +53,16 @@ export default function Navbar({ isLoggedIn }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
 
+  const { mode, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleSearchSubmit = (e) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
@@ -70,6 +76,14 @@ export default function Navbar({ isLoggedIn }) {
   const handleClose = (setAnchor) => () => setAnchor(null);
   const toggleDrawer = (open) => () => setMobileOpen(open);
 
+  const colors = {
+    text: mode === "light" ? (scrolled ? "#111" : "#111") : scrolled ? "#eee" : "#eee",
+    secondaryText: mode === "light" ? (scrolled ? "#555" : "#555") : scrolled ? "#bbb" : "#bbb",
+    background: mode === "light" ? (scrolled ? "#fff" : "transparent") : scrolled ? "#1e1e1e" : "transparent",
+    hoverBackground: mode === "light" ? "#f5f5f5" : "#444",
+    borderHover: mode === "light" ? "#111" : "#eee",
+  };
+
   return (
     <>
       <AppBar
@@ -78,56 +92,52 @@ export default function Navbar({ isLoggedIn }) {
           top: 0,
           left: 0,
           width: "100%",
-          backgroundColor: "transparent",
-          boxShadow: "none",
+          backgroundColor: colors.background,
+          boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
           px: 2,
           fontFamily,
+          transition: "all 0.3s ease",
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Logo */}
           <Typography
             variant="h6"
-            noWrap
             component={NavLink}
             to="/"
             sx={{
               textDecoration: "none",
               fontWeight: 700,
-              color: "#000",
+              color: colors.text,
               fontFamily,
               fontSize: "1.5rem",
               letterSpacing: "0.5px",
+              transition: "color 0.3s ease",
             }}
           >
             MOMENT.
           </Typography>
 
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-            {[
-              { label: "Home", path: "/" },
+            {[{ label: "Home", path: "/" },
               { label: "Categories", path: "/categories" },
               { label: "About Us", path: "/aboutUs" },
-              { label: "Contact Us", path: "/contactUs" },
-            ].map((item) => (
+              { label: "Contact Us", path: "/contactUs" }].map((item) => (
               <Button
                 key={item.path}
                 component={NavLink}
                 to={item.path}
                 style={({ isActive }) => ({
-                  color: isActive ? "#111" : "#555",
-                  fontWeight: isActive ? "600" : "500",
-                  borderBottom: isActive
-                    ? "2px solid #111"
-                    : "2px solid transparent",
+                  color: isActive ? colors.text : colors.secondaryText,
+                  fontWeight: isActive ? 600 : 500,
+                  borderBottom: isActive ? `2px solid ${colors.text}` : "2px solid transparent",
+                  transition: "color 0.3s ease, border-bottom 0.3s ease",
                 })}
                 sx={{
                   textTransform: "none",
                   fontFamily,
                   fontSize: "1rem",
                   letterSpacing: "0.3px",
-                  transition: "0.3s",
-                  "&:hover": { color: "#111" },
+                  "&:hover": { color: colors.text },
                 }}
               >
                 {item.label}
@@ -136,11 +146,11 @@ export default function Navbar({ isLoggedIn }) {
 
             <Button
               sx={{
-                color: "#555",
+                color: colors.secondaryText,
                 textTransform: "none",
                 fontFamily,
                 fontWeight: 500,
-                "&:hover": { color: "#111" },
+                "&:hover": { color: colors.text },
               }}
               onClick={handleOpen(setAnchorElProduct)}
             >
@@ -153,25 +163,18 @@ export default function Navbar({ isLoggedIn }) {
               PaperProps={{
                 sx: {
                   fontFamily,
+                  backgroundColor: colors.background,
                   "& .MuiMenuItem-root": {
-                    color: "#444",
-                    "&:hover": { backgroundColor: "#f5f5f5", color: "#000" },
+                    color: colors.text,
+                    "&:hover": { backgroundColor: colors.hoverBackground },
                   },
                 },
               }}
             >
-              <MenuItem
-                component={NavLink}
-                to="/products"
-                onClick={handleClose(setAnchorElProduct)}
-              >
+              <MenuItem component={NavLink} to="/products" onClick={handleClose(setAnchorElProduct)}>
                 All Products
               </MenuItem>
-              <MenuItem
-                component={NavLink}
-                to="/products?filter=featured"
-                onClick={handleClose(setAnchorElProduct)}
-              >
+              <MenuItem component={NavLink} to="/products?filter=featured" onClick={handleClose(setAnchorElProduct)}>
                 Featured
               </MenuItem>
             </Menu>
@@ -191,13 +194,16 @@ export default function Navbar({ isLoggedIn }) {
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "25px",
                     fontFamily,
+                    backgroundColor: colors.background,
+                    color: colors.text,
+                    transition: "all 0.3s ease",
                   },
                   minWidth: "220px",
                 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowSearch(false)}>
+                      <IconButton onClick={() => setShowSearch(false)} sx={{ color: colors.text }}>
                         ✕
                       </IconButton>
                     </InputAdornment>
@@ -207,48 +213,42 @@ export default function Navbar({ isLoggedIn }) {
             </Slide>
 
             {!showSearch && (
-              <IconButton
-                sx={{ color: "#555", "&:hover": { color: "#000" } }}
+              <IconButton sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}
                 onClick={() => setShowSearch(true)}
               >
                 <SearchIcon />
               </IconButton>
             )}
 
+            <IconButton sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}
+              onClick={toggleTheme}
+            >
+              {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+            </IconButton>
+
             {isLoggedIn ? (
-              <IconButton
-                component={NavLink}
-                to="/cart"
-                sx={{ color: "#555", "&:hover": { color: "#000" } }}
-              >
+              <IconButton component={NavLink} to="/cart" sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}>
                 <ShoppingBagOutlinedIcon />
               </IconButton>
             ) : (
-              <Button
-                component={NavLink}
-                to="/login"
+              <Button component={NavLink} to="/login"
                 sx={{
-                  color: "#555",
+                  color: colors.secondaryText,
                   textTransform: "none",
                   fontFamily,
                   fontWeight: 500,
-                  border: "1px solid #ddd",
+                  border: `1px solid ${mode === "light" ? "#ddd" : "#555"}`,
                   borderRadius: "20px",
                   px: 2,
-                  "&:hover": {
-                    backgroundColor: "#f5f5f5",
-                    color: "#111",
-                  },
+                  "&:hover": { backgroundColor: colors.hoverBackground, color: colors.text },
+                  transition: "all 0.3s ease",
                 }}
               >
                 Login
               </Button>
             )}
 
-            {/* منيو الموبايل */}
-            <IconButton
-              edge="end"
-              sx={{ display: { xs: "flex", md: "none" }, color: "#000" }}
+            <IconButton edge="end" sx={{ display: { xs: "flex", md: "none" }, color: colors.text }}
               onClick={toggleDrawer(true)}
             >
               <MenuIcon />
@@ -257,59 +257,23 @@ export default function Navbar({ isLoggedIn }) {
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={toggleDrawer(false)}
-        TransitionComponent={FadeSlideTransition}
-      >
-        <Box
-          sx={{
-            width: 250,
-            fontFamily,
-            p: 2,
-          }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-        >
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 600, mb: 2, color: "#000" }}
-          >
-            Menu
-          </Typography>
+      <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer(false)} TransitionComponent={FadeSlideTransition}>
+        <Box sx={{ width: 250, fontFamily, p: 2 }} role="presentation" onClick={toggleDrawer(false)}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>Menu</Typography>
           <Divider />
           <List>
-            <ListItem button component={NavLink} to="/">
-              <ListItemIcon>
-                <HomeIcon sx={{ color: "#555" }} />
-              </ListItemIcon>
-              <ListItemText primary="Home" />
-            </ListItem>
-            <ListItem button component={NavLink} to="/categories">
-              <ListItemIcon>
-                <StorefrontIcon sx={{ color: "#555" }} />
-              </ListItemIcon>
-              <ListItemText primary="Categories" />
-            </ListItem>
-            <ListItem button component={NavLink} to="/products">
-              <ListItemIcon>
-                <Inventory2Icon sx={{ color: "#555" }} />
-              </ListItemIcon>
-              <ListItemText primary="Products" />
-            </ListItem>
-            <ListItem button component={NavLink} to="/aboutUs">
-              <ListItemIcon>
-                <ContactMailIcon sx={{ color: "#555" }} />
-              </ListItemIcon>
-              <ListItemText primary="About Us" />
-            </ListItem>
-            <ListItem button component={NavLink} to="/contactUs">
-              <ListItemIcon>
-                <ContactMailIcon sx={{ color: "#555" }} />
-              </ListItemIcon>
-              <ListItemText primary="Contact Us" />
-            </ListItem>
+            {[
+              { label: "Home", path: "/", icon: <HomeIcon /> },
+              { label: "Categories", path: "/categories", icon: <StorefrontIcon /> },
+              { label: "Products", path: "/products", icon: <Inventory2Icon /> },
+              { label: "About Us", path: "/aboutUs", icon: <ContactMailIcon /> },
+              { label: "Contact Us", path: "/contactUs", icon: <ContactMailIcon /> },
+            ].map((item) => (
+              <ListItem button key={item.path} component={NavLink} to={item.path}>
+                <ListItemIcon sx={{ color: colors.secondaryText }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.label} sx={{ color: colors.text }} />
+              </ListItem>
+            ))}
           </List>
         </Box>
       </Drawer>
