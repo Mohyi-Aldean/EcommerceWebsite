@@ -2,18 +2,15 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import Backend from "i18next-http-backend";
 
-const savedLang = localStorage.getItem("lang") || "EN";
-
 i18n
-  .use(initReactI18next)
   .use(Backend)
+  .use(initReactI18next)
   .init({
-    lng: savedLang,
+    lng: localStorage.getItem("lang") || "EN",
     fallbackLng: "EN",
-    debug: true,
-    interpolation: {
-      escapeValue: false,
-    },
+    debug: false,
+    interpolation: { escapeValue: false },
+    backend: { loadPath: "/locales/{{lng}}/translation.json" },
   });
 
 export default i18n;

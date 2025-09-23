@@ -60,6 +60,13 @@ export default function Navbar({ isLoggedIn }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const savedMode = localStorage.getItem("mode");
+    if (savedMode && savedMode !== mode) {
+      toggleTheme();
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -67,7 +74,9 @@ export default function Navbar({ isLoggedIn }) {
 
   // ضبط اتجاه الصفحة عند أول تحميل
   useEffect(() => {
-    document.body.dir = i18n.language === "AR" ? "rtl" : "ltr";
+    const lang = localStorage.getItem("lang") || i18n.language;
+    document.body.dir = lang === "AR" ? "rtl" : "ltr";
+    i18n.changeLanguage(lang);
   }, []);
 
   const handleSearchSubmit = (e) => {
@@ -82,12 +91,19 @@ export default function Navbar({ isLoggedIn }) {
   const handleClose = (setAnchor) => () => setAnchor(null);
   const toggleDrawer = (open) => () => setMobileOpen(open);
 
-  // ✅ تبديل اللغة مع التخزين
+  // تبديل اللغة مع التخزين و تغيير اتجاه الصفحة
   const toggleLanguage = () => {
     const newLang = i18n.language === "EN" ? "AR" : "EN";
     i18n.changeLanguage(newLang);
     localStorage.setItem("lang", newLang);
     document.body.dir = newLang === "AR" ? "rtl" : "ltr";
+  };
+
+  // حفظ وضعية Dark/Light Mode عند تغييره
+  const handleToggleTheme = () => {
+    toggleTheme();
+    const newMode = mode === "light" ? "dark" : "light";
+    localStorage.setItem("mode", newMode);
   };
 
   const colors = {
@@ -131,7 +147,6 @@ export default function Navbar({ isLoggedIn }) {
             MOMENT.
           </Typography>
 
-          {/* القائمة العلوية */}
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
             {[{ label: t("Home"), path: "/" },
               { label: t("Categories"), path: "/categories" },
@@ -195,7 +210,6 @@ export default function Navbar({ isLoggedIn }) {
             </Menu>
           </Box>
 
-          {/* أيقونات وإجراءات */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Slide direction="left" in={showSearch} mountOnEnter unmountOnExit>
               <TextField
@@ -237,12 +251,11 @@ export default function Navbar({ isLoggedIn }) {
             )}
 
             <IconButton sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}
-              onClick={toggleTheme}
+              onClick={handleToggleTheme}
             >
               {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
             </IconButton>
 
-            {/* ✅ زر اللغة */}
             <Button
               onClick={toggleLanguage}
               sx={{
@@ -291,7 +304,6 @@ export default function Navbar({ isLoggedIn }) {
         </Toolbar>
       </AppBar>
 
-      {/* Drawer للموبايل */}
       <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer(false)} TransitionComponent={FadeSlideTransition}>
         <Box sx={{ width: 250, fontFamily, p: 2 }} role="presentation" onClick={toggleDrawer(false)}>
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>{t("Menu")}</Typography>
