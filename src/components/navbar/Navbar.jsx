@@ -20,7 +20,6 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
-
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
@@ -30,8 +29,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-
 import { ThemeContext } from "../../theme/ThemeContext.jsx";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/500.css";
@@ -49,6 +49,7 @@ const FadeSlideTransition = forwardRef(function FadeSlideTransition(props, ref) 
 });
 
 export default function Navbar({ isLoggedIn }) {
+  const { t } = useTranslation();
   const [anchorElProduct, setAnchorElProduct] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -64,6 +65,11 @@ export default function Navbar({ isLoggedIn }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ضبط اتجاه الصفحة عند أول تحميل
+  useEffect(() => {
+    document.body.dir = i18n.language === "AR" ? "rtl" : "ltr";
+  }, []);
+
   const handleSearchSubmit = (e) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
@@ -75,6 +81,14 @@ export default function Navbar({ isLoggedIn }) {
   const handleOpen = (setAnchor) => (event) => setAnchor(event.currentTarget);
   const handleClose = (setAnchor) => () => setAnchor(null);
   const toggleDrawer = (open) => () => setMobileOpen(open);
+
+  // ✅ تبديل اللغة مع التخزين
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "EN" ? "AR" : "EN";
+    i18n.changeLanguage(newLang);
+    localStorage.setItem("lang", newLang);
+    document.body.dir = newLang === "AR" ? "rtl" : "ltr";
+  };
 
   const colors = {
     text: mode === "light" ? (scrolled ? "#111" : "#111") : scrolled ? "#eee" : "#eee",
@@ -117,11 +131,12 @@ export default function Navbar({ isLoggedIn }) {
             MOMENT.
           </Typography>
 
+          {/* القائمة العلوية */}
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-            {[{ label: "Home", path: "/" },
-              { label: "Categories", path: "/categories" },
-              { label: "About Us", path: "/aboutUs" },
-              { label: "Contact Us", path: "/contactUs" }].map((item) => (
+            {[{ label: t("Home"), path: "/" },
+              { label: t("Categories"), path: "/categories" },
+              { label: t("AboutUs"), path: "/aboutUs" },
+              { label: t("ContactUs"), path: "/contactUs" }].map((item) => (
               <Button
                 key={item.path}
                 component={NavLink}
@@ -154,7 +169,7 @@ export default function Navbar({ isLoggedIn }) {
               }}
               onClick={handleOpen(setAnchorElProduct)}
             >
-              Products ▾
+              {t("Products")} ▾
             </Button>
             <Menu
               anchorEl={anchorElProduct}
@@ -172,20 +187,21 @@ export default function Navbar({ isLoggedIn }) {
               }}
             >
               <MenuItem component={NavLink} to="/products" onClick={handleClose(setAnchorElProduct)}>
-                All Products
+                {t("AllProducts")}
               </MenuItem>
               <MenuItem component={NavLink} to="/products?filter=featured" onClick={handleClose(setAnchorElProduct)}>
-                Featured
+                {t("Featured")}
               </MenuItem>
             </Menu>
           </Box>
 
+          {/* أيقونات وإجراءات */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Slide direction="left" in={showSearch} mountOnEnter unmountOnExit>
               <TextField
                 autoFocus
                 size="small"
-                placeholder="Search..."
+                placeholder={t("Search") + "..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchSubmit}
@@ -226,6 +242,24 @@ export default function Navbar({ isLoggedIn }) {
               {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
             </IconButton>
 
+            {/* ✅ زر اللغة */}
+            <Button
+              onClick={toggleLanguage}
+              sx={{
+                color: colors.secondaryText,
+                textTransform: "none",
+                fontFamily,
+                fontWeight: 500,
+                border: `1px solid ${mode === "light" ? "#ddd" : "#555"}`,
+                borderRadius: "20px",
+                px: 2,
+                "&:hover": { backgroundColor: colors.hoverBackground, color: colors.text },
+                transition: "all 0.3s ease",
+              }}
+            >
+              {i18n.language === "EN" ? "AR" : "EN"}
+            </Button>
+
             {isLoggedIn ? (
               <IconButton component={NavLink} to="/cart" sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}>
                 <ShoppingBagOutlinedIcon />
@@ -244,7 +278,7 @@ export default function Navbar({ isLoggedIn }) {
                   transition: "all 0.3s ease",
                 }}
               >
-                Login
+                {t("Login")}
               </Button>
             )}
 
@@ -257,17 +291,18 @@ export default function Navbar({ isLoggedIn }) {
         </Toolbar>
       </AppBar>
 
+      {/* Drawer للموبايل */}
       <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer(false)} TransitionComponent={FadeSlideTransition}>
         <Box sx={{ width: 250, fontFamily, p: 2 }} role="presentation" onClick={toggleDrawer(false)}>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>Menu</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>{t("Menu")}</Typography>
           <Divider />
           <List>
             {[
-              { label: "Home", path: "/", icon: <HomeIcon /> },
-              { label: "Categories", path: "/categories", icon: <StorefrontIcon /> },
-              { label: "Products", path: "/products", icon: <Inventory2Icon /> },
-              { label: "About Us", path: "/aboutUs", icon: <ContactMailIcon /> },
-              { label: "Contact Us", path: "/contactUs", icon: <ContactMailIcon /> },
+              { label: t("Home"), path: "/", icon: <HomeIcon /> },
+              { label: t("Categories"), path: "/categories", icon: <StorefrontIcon /> },
+              { label: t("Products"), path: "/products", icon: <Inventory2Icon /> },
+              { label: t("AboutUs"), path: "/aboutUs", icon: <ContactMailIcon /> },
+              { label: t("ContactUs"), path: "/contactUs", icon: <ContactMailIcon /> },
             ].map((item) => (
               <ListItem button key={item.path} component={NavLink} to={item.path}>
                 <ListItemIcon sx={{ color: colors.secondaryText }}>{item.icon}</ListItemIcon>
