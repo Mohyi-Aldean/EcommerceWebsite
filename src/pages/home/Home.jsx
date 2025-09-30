@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Box } from "@mui/material";
-import AccessoriesImg from "../../assets/images/accessories.jpeg";
-import ClothesImg from "../../assets/images/clothes.jpeg";
-import PhoneImg from "../../assets/images/phone.jpeg";
-import ElectronicImg from "../../assets/images/electronic.jpeg";
+import AccessoriesImg from "../../assets/images/furniture.jpg";
+import ClothesImg from "../../assets/images/clothes.jpg";
+import PhoneImg from "../../assets/images/sport.jpg";
+import ElectronicImg from "../../assets/images/technology.jpg";
 import i18n from "../../i18n.jsx";
 
 import "swiper/css";
@@ -18,7 +18,6 @@ export default function Home() {
   const images = [ElectronicImg, AccessoriesImg, ClothesImg, PhoneImg];
   const [dir, setDir] = useState(i18n.language === "AR" ? "rtl" : "ltr");
 
-  // الاستماع لتغيير اللغة مباشرة
   useEffect(() => {
     const handleLanguageChange = () => setDir(i18n.language === "AR" ? "rtl" : "ltr");
     window.addEventListener("languageChanged", handleLanguageChange);
