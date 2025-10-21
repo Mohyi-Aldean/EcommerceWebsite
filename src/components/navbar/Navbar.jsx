@@ -15,7 +15,6 @@ import {
   ListItemIcon,
   Divider,
   Slide,
-  Fade,
   TextField,
   InputAdornment,
 } from "@mui/material";
@@ -29,104 +28,83 @@ import HomeIcon from "@mui/icons-material/Home";
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import LanguageIcon from "@mui/icons-material/Language";
 import { ThemeContext } from "../../theme/ThemeContext.jsx";
 import { useTranslation } from "react-i18next";
-import i18n from "i18next";
+import i18n from "../../i18n.jsx";
 
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
 import "@fontsource/poppins/700.css";
 
-const fontFamily = "'Poppins', sans-serif";
-
-const FadeSlideTransition = forwardRef(function FadeSlideTransition(props, ref) {
-  return (
-    <Fade in={props.in} timeout={400}>
-      <Slide direction="left" ref={ref} {...props} timeout={800} />
-    </Fade>
-  );
-});
+const FadeSlideTransition = forwardRef((props, ref) => (
+  <Slide direction="left" ref={ref} {...props} />
+));
 
 export default function Navbar({ isLoggedIn }) {
-  const { t } = useTranslation();
-  const [anchorElProduct, setAnchorElProduct] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scrolled, setScrolled] = useState(false);
-
   const { mode, toggleTheme } = useContext(ThemeContext);
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const savedMode = localStorage.getItem("mode");
-    if (savedMode && savedMode !== mode) {
-      toggleTheme();
-    }
-  }, []);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [anchorElLang, setAnchorElLang] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [dir, setDir] = useState(i18n.language === "AR" ? "rtl" : "ltr");
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // ضبط اتجاه الصفحة عند أول تحميل
-  useEffect(() => {
-    const lang = localStorage.getItem("lang") || i18n.language;
-    document.body.dir = lang === "AR" ? "rtl" : "ltr";
-    i18n.changeLanguage(lang);
-  }, []);
-
-  const handleSearchSubmit = (e) => {
-    if (e.key === "Enter" && searchQuery.trim() !== "") {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setShowSearch(false);
-      setSearchQuery("");
-    }
-  };
-
-  const handleOpen = (setAnchor) => (event) => setAnchor(event.currentTarget);
-  const handleClose = (setAnchor) => () => setAnchor(null);
-  const toggleDrawer = (open) => () => setMobileOpen(open);
-
-  // تبديل اللغة مع التخزين و تغيير اتجاه الصفحة
-  const toggleLanguage = () => {
-    const newLang = i18n.language === "EN" ? "AR" : "EN";
-    i18n.changeLanguage(newLang);
-    localStorage.setItem("lang", newLang);
-    document.body.dir = newLang === "AR" ? "rtl" : "ltr";
-  };
-
-  // حفظ وضعية Dark/Light Mode عند تغييره
-  const handleToggleTheme = () => {
-    toggleTheme();
-    const newMode = mode === "light" ? "dark" : "light";
-    localStorage.setItem("mode", newMode);
-  };
+    setDir(i18n.language === "AR" ? "rtl" : "ltr");
+  }, [i18n.language]);
 
   const colors = {
-    text: mode === "light" ? (scrolled ? "#111" : "#111") : scrolled ? "#eee" : "#eee",
-    secondaryText: mode === "light" ? (scrolled ? "#555" : "#555") : scrolled ? "#bbb" : "#bbb",
-    background: mode === "light" ? (scrolled ? "#fff" : "transparent") : scrolled ? "#1e1e1e" : "transparent",
-    hoverBackground: mode === "light" ? "#f5f5f5" : "#444",
-    borderHover: mode === "light" ? "#111" : "#eee",
+    bg: mode === "dark" ? "#1A1A1A" : "#FFFFFF",
+    text: mode === "dark" ? "#FFFFFF" : "#141718",
+    secondaryText: mode === "dark" ? "#B0B0B0" : "#666666",
+    primary: "#38CB89",
   };
 
+  const fontFamily = "'Poppins', sans-serif";
+
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("lang", lang);
+    setAnchorElLang(null);
+  };
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setMobileOpen(open);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userToken");
+    navigate("/login");
+  };
+
+  const navItems = [
+    { label: t("Home"), path: "/", icon: <HomeIcon /> },
+    { label: t("Categories"), path: "/categories", icon: <StorefrontIcon /> },
+    { label: t("Products"), path: "/products", icon: <Inventory2Icon /> },
+    { label: t("AboutUs"), path: "/aboutUs", icon: <ContactMailIcon /> },
+    { label: t("ContactUs"), path: "/contactUs", icon: <ContactMailIcon /> },
+  ];
+
   return (
-    <>
+    <Box sx={{ flexGrow: 1 }} dir={dir}>
       <AppBar
         position="sticky"
         sx={{
-          top: 0,
-          left: 0,
-          width: "100%",
-          backgroundColor: colors.background,
-          boxShadow: scrolled ? "0 2px 10px rgba(0,0,0,0.1)" : "none",
-          px: 2,
-          fontFamily,
-          transition: "all 0.3s ease",
+          bgcolor: colors.bg,
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
+          color: colors.text,
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -135,167 +113,225 @@ export default function Navbar({ isLoggedIn }) {
             component={NavLink}
             to="/"
             sx={{
-              textDecoration: "none",
+              flexGrow: 1,
               fontWeight: 700,
+              fontSize: { xs: "1.2rem", md: "1.5rem" },
+              textDecoration: "none",
               color: colors.text,
               fontFamily,
-              fontSize: "1.5rem",
-              letterSpacing: "0.5px",
-              transition: "color 0.3s ease",
             }}
           >
             MOMENT.
           </Typography>
 
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3 }}>
-            {[{ label: t("Home"), path: "/" },
-              { label: t("Categories"), path: "/categories" },
-              { label: t("AboutUs"), path: "/aboutUs" },
-              { label: t("ContactUs"), path: "/contactUs" }].map((item) => (
+          {/* 🔍 Search Box */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              mx: 3,
+            }}
+          >
+            <TextField
+              size="small"
+              placeholder={t("Search")}
+              variant="outlined"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  height: "38px",
+                  borderRadius: "20px",
+                  fontSize: "0.9rem",
+                  color: colors.text,
+                  bgcolor: mode === "dark" ? "#2C2C2C" : "#F3F3F3",
+                  "& fieldset": {
+                    borderColor: mode === "dark" ? "#444" : "#E0E0E0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: `${colors.primary} !important`,
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: `${colors.primary} !important`,
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon
+                      sx={{ color: colors.secondaryText, fontSize: "1.2rem" }}
+                    />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+
+          {/* 🌐 Navigation */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, fontFamily }}>
+            {navItems.map((item) => (
               <Button
                 key={item.path}
                 component={NavLink}
                 to={item.path}
-                style={({ isActive }) => ({
-                  color: isActive ? colors.text : colors.secondaryText,
-                  fontWeight: isActive ? 600 : 500,
-                  borderBottom: isActive ? `2px solid ${colors.text}` : "2px solid transparent",
-                  transition: "color 0.3s ease, border-bottom 0.3s ease",
-                })}
                 sx={{
+                  color: colors.text,
                   textTransform: "none",
-                  fontFamily,
-                  fontSize: "1rem",
-                  letterSpacing: "0.3px",
-                  "&:hover": { color: colors.text },
+                  fontWeight: 500,
+                  fontSize: "0.95rem",
+                  "&.active": {
+                    color: colors.primary,
+                    fontWeight: 600,
+                    borderBottom: `2px solid ${colors.primary}`,
+                    borderRadius: 0,
+                  },
                 }}
               >
                 {item.label}
               </Button>
             ))}
-
-            <Button
-              sx={{
-                color: colors.secondaryText,
-                textTransform: "none",
-                fontFamily,
-                fontWeight: 500,
-                "&:hover": { color: colors.text },
-              }}
-              onClick={handleOpen(setAnchorElProduct)}
-            >
-              {t("Products")} ▾
-            </Button>
-            <Menu
-              anchorEl={anchorElProduct}
-              open={Boolean(anchorElProduct)}
-              onClose={handleClose(setAnchorElProduct)}
-              PaperProps={{
-                sx: {
-                  fontFamily,
-                  backgroundColor: colors.background,
-                  "& .MuiMenuItem-root": {
-                    color: colors.text,
-                    "&:hover": { backgroundColor: colors.hoverBackground },
-                  },
-                },
-              }}
-            >
-              <MenuItem component={NavLink} to="/products" onClick={handleClose(setAnchorElProduct)}>
-                {t("AllProducts")}
-              </MenuItem>
-              <MenuItem component={NavLink} to="/products?filter=featured" onClick={handleClose(setAnchorElProduct)}>
-                {t("Featured")}
-              </MenuItem>
-            </Menu>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Slide direction="left" in={showSearch} mountOnEnter unmountOnExit>
-              <TextField
-                autoFocus
-                size="small"
-                placeholder={t("Search") + "..."}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleSearchSubmit}
-                variant="outlined"
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "25px",
-                    fontFamily,
-                    backgroundColor: colors.background,
-                    color: colors.text,
-                    transition: "all 0.3s ease",
-                  },
-                  minWidth: "220px",
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowSearch(false)} sx={{ color: colors.text }}>
-                        ✕
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Slide>
-
-            {!showSearch && (
-              <IconButton sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}
-                onClick={() => setShowSearch(true)}
-              >
-                <SearchIcon />
-              </IconButton>
-            )}
-
-            <IconButton sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}
-              onClick={handleToggleTheme}
+          {/* 🌙 Right Side Icons */}
+          <Box display="flex" alignItems="center">
+            <IconButton
+              sx={{ ml: 1, color: colors.text }}
+              onClick={toggleTheme}
             >
-              {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+              {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
 
-            <Button
-              onClick={toggleLanguage}
-              sx={{
-                color: colors.secondaryText,
-                textTransform: "none",
-                fontFamily,
-                fontWeight: 500,
-                border: `1px solid ${mode === "light" ? "#ddd" : "#555"}`,
-                borderRadius: "20px",
-                px: 2,
-                "&:hover": { backgroundColor: colors.hoverBackground, color: colors.text },
-                transition: "all 0.3s ease",
-              }}
+            <IconButton
+              sx={{ ml: 1, color: colors.text }}
+              onClick={(e) => setAnchorElLang(e.currentTarget)}
             >
-              {i18n.language === "EN" ? "AR" : "EN"}
-            </Button>
+              <LanguageIcon />
+            </IconButton>
 
-            {isLoggedIn ? (
-              <IconButton component={NavLink} to="/cart" sx={{ color: colors.secondaryText, "&:hover": { color: colors.text } }}>
-                <ShoppingBagOutlinedIcon />
-              </IconButton>
-            ) : (
-              <Button component={NavLink} to="/login"
-                sx={{
-                  color: colors.secondaryText,
-                  textTransform: "none",
-                  fontFamily,
-                  fontWeight: 500,
-                  border: `1px solid ${mode === "light" ? "#ddd" : "#555"}`,
-                  borderRadius: "20px",
-                  px: 2,
-                  "&:hover": { backgroundColor: colors.hoverBackground, color: colors.text },
-                  transition: "all 0.3s ease",
-                }}
+            <Menu
+              anchorEl={anchorElLang}
+              open={Boolean(anchorElLang)}
+              onClose={() => setAnchorElLang(null)}
+              MenuListProps={{ dir }}
+            >
+              <MenuItem
+                onClick={() => changeLanguage("EN")}
+                selected={i18n.language === "EN"}
               >
-                {t("Login")}
-              </Button>
+                English (EN)
+              </MenuItem>
+              <MenuItem
+                onClick={() => changeLanguage("AR")}
+                selected={i18n.language === "AR"}
+              >
+                العربية (AR)
+              </MenuItem>
+            </Menu>
+
+            <IconButton
+              sx={{ ml: 1, color: colors.text }}
+              component={NavLink}
+              to="/cart"
+            >
+              <ShoppingBagOutlinedIcon />
+            </IconButton>
+
+            {/* 👇 Login & Register Buttons */}
+            {!isLoggedIn ? (
+              <Box sx={{ display: { xs: "none", sm: "flex" }, ml: 2, gap: 1 }}>
+                <Button
+                  component={NavLink}
+                  to="/login"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "30px",
+                    padding: "6px 22px",
+                    borderWidth: "2px",
+                    borderColor: mode === "dark" ? "#38CB89" : "#2C3E50",
+                    color: mode === "dark" ? "#38CB89" : "#2C3E50",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow:
+                      mode === "dark" ? "0 0 8px rgba(56,203,137,0.4)" : "none",
+                    "&:hover": {
+                      borderColor: "#38CB89",
+                      color: "#38CB89",
+                      transform: "translateY(-2px) scale(1.03)",
+                      boxShadow: "0 4px 12px rgba(56,203,137,0.3)",
+                    },
+                  }}
+                >
+                  {t("SignIn")}
+                </Button>
+
+                <Button
+                  component={NavLink}
+                  to="/register"
+                  variant="contained"
+                  sx={{
+                    borderRadius: "30px",
+                    padding: "6px 25px",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    background:
+                      "linear-gradient(135deg, #38CB89 0%, #2C3E50 100%)",
+                    color: "#fff",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                    overflow: "hidden",
+                    boxShadow:
+                      mode === "dark"
+                        ? "0 0 10px rgba(56,203,137,0.6)"
+                        : "0 0 6px rgba(56,203,137,0.3)",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(135deg, #2C3E50 0%, #38CB89 100%)",
+                      transform: "translateY(-2px) scale(1.03)",
+                      boxShadow: "0 4px 12px rgba(56,203,137,0.4)",
+                    },
+                    animation: "pulse 3s infinite",
+                    "@keyframes pulse": {
+                      "0%": { transform: "scale(1)" },
+                      "50%": { transform: "scale(1.05)" },
+                      "100%": { transform: "scale(1)" },
+                    },
+                  }}
+                >
+                  {t("SignUp")}
+                </Button>
+              </Box>
+            ) : (
+              <>
+                <IconButton
+                  sx={{ ml: 1, color: colors.text }}
+                  onClick={(e) => setAnchorElUser(e.currentTarget)}
+                >
+                  <AccountCircleIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorElUser}
+                  open={Boolean(anchorElUser)}
+                  onClose={() => setAnchorElUser(null)}
+                  MenuListProps={{ dir }}
+                >
+                  <MenuItem onClick={() => setAnchorElUser(null)}>
+                    {t("Profile")}
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText primary={t("Logout")} />
+                  </MenuItem>
+                </Menu>
+              </>
             )}
 
-            <IconButton edge="end" sx={{ display: { xs: "flex", md: "none" }, color: colors.text }}
+            <IconButton
+              edge="end"
+              sx={{ display: { xs: "flex", md: "none" }, color: colors.text }}
               onClick={toggleDrawer(true)}
             >
               <MenuIcon />
@@ -303,27 +339,6 @@ export default function Navbar({ isLoggedIn }) {
           </Box>
         </Toolbar>
       </AppBar>
-
-      <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer(false)} TransitionComponent={FadeSlideTransition}>
-        <Box sx={{ width: 250, fontFamily, p: 2 }} role="presentation" onClick={toggleDrawer(false)}>
-          <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: colors.text }}>{t("Menu")}</Typography>
-          <Divider />
-          <List>
-            {[
-              { label: t("Home"), path: "/", icon: <HomeIcon /> },
-              { label: t("Categories"), path: "/categories", icon: <StorefrontIcon /> },
-              { label: t("Products"), path: "/products", icon: <Inventory2Icon /> },
-              { label: t("AboutUs"), path: "/aboutUs", icon: <ContactMailIcon /> },
-              { label: t("ContactUs"), path: "/contactUs", icon: <ContactMailIcon /> },
-            ].map((item) => (
-              <ListItem button key={item.path} component={NavLink} to={item.path}>
-                <ListItemIcon sx={{ color: colors.secondaryText }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} sx={{ color: colors.text }} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-    </>
+    </Box>
   );
 }
