@@ -71,13 +71,15 @@ export default function Cart() {
     }
   };
 
-
   const incremantItem = async (productId) => {
     try {
-      await AxiosUserInstance.post(`i/Customer/Carts/increment/${productId}`, {});
-       if (response.status == 200) {
-    window.location.reload();
-  }
+      const response = await AxiosUserInstance.post(
+        `/Customer/Carts/increment/${productId}`,
+        {}
+      );
+      if (response.status === 200) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Failed to add item to cart:", error);
     }
@@ -85,10 +87,13 @@ export default function Cart() {
 
   const decremantItem = async (productId) => {
     try {
-      await AxiosUserInstance.post(`/Customer/Carts/decrement/${productId}`, {});
-      if (response.status == 200) {
-    window.location.reload();
-  }
+      const response = await AxiosUserInstance.post(
+        `/Customer/Carts/decrement/${productId}`,
+        {}
+      );
+      if (response.status === 200) {
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Failed to decrement item in cart:", error);
     }
@@ -109,7 +114,7 @@ export default function Cart() {
             <TableRow>
               <TableCell>{item.productName}</TableCell>
               <TableCell>
-                  <Button onClick={() => decremantItem(item.productId)}>-</Button>
+                <Button onClick={() => decremantItem(item.productId)}>-</Button>
                 {item.count}{" "}
                 <Button onClick={() => incremantItem(item.productId)}>+</Button>
               </TableCell>

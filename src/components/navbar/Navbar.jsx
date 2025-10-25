@@ -8,12 +8,8 @@ import {
   Menu,
   MenuItem,
   Button,
-  Drawer,
-  List,
-  ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
   Slide,
   TextField,
   InputAdornment,
@@ -124,7 +120,6 @@ export default function Navbar({ isLoggedIn }) {
             MOMENT.
           </Typography>
 
-          {/* 🔍 Search Box */}
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -166,7 +161,6 @@ export default function Navbar({ isLoggedIn }) {
             />
           </Box>
 
-          {/* 🌐 Navigation */}
           <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, fontFamily }}>
             {navItems.map((item) => (
               <Button
@@ -191,7 +185,6 @@ export default function Navbar({ isLoggedIn }) {
             ))}
           </Box>
 
-          {/* 🌙 Right Side Icons */}
           <Box display="flex" alignItems="center">
             <IconButton
               sx={{ ml: 1, color: colors.text }}
@@ -235,7 +228,6 @@ export default function Navbar({ isLoggedIn }) {
               <ShoppingBagOutlinedIcon />
             </IconButton>
 
-            {/* 👇 Login & Register Buttons */}
             {!isLoggedIn ? (
               <Box sx={{ display: { xs: "none", sm: "flex" }, ml: 2, gap: 1 }}>
                 <Button
