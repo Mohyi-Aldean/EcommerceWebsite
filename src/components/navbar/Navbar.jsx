@@ -8,33 +8,36 @@ import {
   Menu,
   MenuItem,
   Button,
-  ListItemText,
-  ListItemIcon,
-  Slide,
   TextField,
   InputAdornment,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Avatar,
+  ClickAwayListener,
+  Slide,
 } from "@mui/material";
 import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+// ❌ الخطأ كان هنا: '@mui/@mui/icons-material/Brightness7'
+// ✅ التصحيح هو: '@mui/icons-material/Brightness7'
+import Brightness7Icon from "@mui/icons-material/Brightness7"; 
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import HomeIcon from "@mui/icons-material/Home";
-import StorefrontIcon from "@mui/icons-material/Storefront";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LanguageIcon from "@mui/icons-material/Language";
+import PersonIcon from "@mui/icons-material/Person";
 import { ThemeContext } from "../../theme/ThemeContext.jsx";
 import { useTranslation } from "react-i18next";
 import i18n from "../../i18n.jsx";
-
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/poppins/700.css";
 
 const FadeSlideTransition = forwardRef((props, ref) => (
   <Slide direction="left" ref={ref} {...props} />
@@ -46,9 +49,10 @@ export default function Navbar({ isLoggedIn }) {
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorElLang, setAnchorElLang] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
   const [dir, setDir] = useState(i18n.language === "AR" ? "rtl" : "ltr");
+  const [anchorProfile, setAnchorProfile] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchValue, setSearchValue] = useState(localStorage.getItem("search") || "");
 
   useEffect(() => {
     setDir(i18n.language === "AR" ? "rtl" : "ltr");
@@ -63,20 +67,18 @@ export default function Navbar({ isLoggedIn }) {
 
   const fontFamily = "'Poppins', sans-serif";
 
-  const changeLanguage = (lang) => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem("lang", lang);
-    setAnchorElLang(null);
-  };
+  const navItems = [
+    { label: t("Home"), path: "/", icon: <HomeIcon /> },
+    { label: t("Products"), path: "/products", icon: <Inventory2Icon /> },
+    { label: t("AboutUs"), path: "/aboutUs", icon: <ContactMailIcon /> },
+    { label: t("ContactUs"), path: "/contactUs", icon: <ContactMailIcon /> },
+  ];
 
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setMobileOpen(open);
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    localStorage.setItem("search", value);
+    // يمكنك إضافة منطق البحث هنا، مثل إعادة التوجيه إلى صفحة النتائج أو فلترة القائمة
   };
 
   const handleLogout = () => {
@@ -85,13 +87,41 @@ export default function Navbar({ isLoggedIn }) {
     navigate("/login");
   };
 
-  const navItems = [
-    { label: t("Home"), path: "/", icon: <HomeIcon /> },
-    { label: t("Categories"), path: "/categories", icon: <StorefrontIcon /> },
-    { label: t("Products"), path: "/products", icon: <Inventory2Icon /> },
-    { label: t("AboutUs"), path: "/aboutUs", icon: <ContactMailIcon /> },
-    { label: t("ContactUs"), path: "/contactUs", icon: <ContactMailIcon /> },
-  ];
+  const changeLanguage = () => {
+    const newLang = i18n.language === "AR" ? "EN" : "AR";
+    i18n.changeLanguage(newLang);
+    localStorage.setItem("lang", newLang);
+  };
+
+  const drawer = (
+    <Box sx={{ width: 250, bgcolor: colors.bg, height: "100%", color: colors.text }}>
+      <Typography
+        variant="h6"
+        sx={{ p: 2, fontWeight: 700, borderBottom: `1px solid ${colors.secondaryText}` }}
+      >
+        MOMENT.
+      </Typography>
+      <List>
+        {navItems.map((item) => (
+          <ListItem
+            button="true"
+            key={item.path}
+            component={NavLink}
+            to={item.path}
+            onClick={() => setMobileOpen(false)}
+            sx={{
+              color: colors.text,
+              "&.active": { color: colors.primary, fontWeight: 600 },
+            }}
+          >
+            <ListItemIcon sx={{ color: colors.text }}>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+    </Box>
+  );
 
   return (
     <Box sx={{ flexGrow: 1 }} dir={dir}>
@@ -99,17 +129,18 @@ export default function Navbar({ isLoggedIn }) {
         position="sticky"
         sx={{
           bgcolor: colors.bg,
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)",
           color: colors.text,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          transition: "all 0.3s ease-in-out",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
+          {/* Logo */}
           <Typography
             variant="h6"
             component={NavLink}
             to="/"
             sx={{
-              flexGrow: 1,
               fontWeight: 700,
               fontSize: { xs: "1.2rem", md: "1.5rem" },
               textDecoration: "none",
@@ -120,48 +151,16 @@ export default function Navbar({ isLoggedIn }) {
             MOMENT.
           </Typography>
 
+          {/* Center Links */}
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
+              gap: 3,
               alignItems: "center",
-              mx: 3,
+              justifyContent: "center",
+              flexGrow: 1,
             }}
           >
-            <TextField
-              size="small"
-              placeholder={t("Search")}
-              variant="outlined"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  height: "38px",
-                  borderRadius: "20px",
-                  fontSize: "0.9rem",
-                  color: colors.text,
-                  bgcolor: mode === "dark" ? "#2C2C2C" : "#F3F3F3",
-                  "& fieldset": {
-                    borderColor: mode === "dark" ? "#444" : "#E0E0E0",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: `${colors.primary} !important`,
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: `${colors.primary} !important`,
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon
-                      sx={{ color: colors.secondaryText, fontSize: "1.2rem" }}
-                    />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 3, fontFamily }}>
             {navItems.map((item) => (
               <Button
                 key={item.path}
@@ -171,12 +170,10 @@ export default function Navbar({ isLoggedIn }) {
                   color: colors.text,
                   textTransform: "none",
                   fontWeight: 500,
-                  fontSize: "0.95rem",
                   "&.active": {
                     color: colors.primary,
                     fontWeight: 600,
                     borderBottom: `2px solid ${colors.primary}`,
-                    borderRadius: 0,
                   },
                 }}
               >
@@ -185,152 +182,120 @@ export default function Navbar({ isLoggedIn }) {
             ))}
           </Box>
 
-          <Box display="flex" alignItems="center">
-            <IconButton
-              sx={{ ml: 1, color: colors.text }}
-              onClick={toggleTheme}
-            >
-              {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-
-            <IconButton
-              sx={{ ml: 1, color: colors.text }}
-              onClick={(e) => setAnchorElLang(e.currentTarget)}
-            >
-              <LanguageIcon />
-            </IconButton>
-
-            <Menu
-              anchorEl={anchorElLang}
-              open={Boolean(anchorElLang)}
-              onClose={() => setAnchorElLang(null)}
-              MenuListProps={{ dir }}
-            >
-              <MenuItem
-                onClick={() => changeLanguage("EN")}
-                selected={i18n.language === "EN"}
-              >
-                English (EN)
-              </MenuItem>
-              <MenuItem
-                onClick={() => changeLanguage("AR")}
-                selected={i18n.language === "AR"}
-              >
-                العربية (AR)
-              </MenuItem>
-            </Menu>
-
-            <IconButton
-              sx={{ ml: 1, color: colors.text }}
-              component={NavLink}
-              to="/cart"
-            >
+          {/* Left Section (Icons) */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            
+            {/* Cart Icon - تم وضعه بجانب البحث */}
+            <IconButton component={NavLink} to="/cart" sx={{ color: colors.text }}>
               <ShoppingBagOutlinedIcon />
             </IconButton>
 
-            {!isLoggedIn ? (
-              <Box sx={{ display: { xs: "none", sm: "flex" }, ml: 2, gap: 1 }}>
-                <Button
-                  component={NavLink}
-                  to="/login"
-                  variant="outlined"
-                  sx={{
-                    borderRadius: "30px",
-                    padding: "6px 22px",
-                    borderWidth: "2px",
-                    borderColor: mode === "dark" ? "#38CB89" : "#2C3E50",
-                    color: mode === "dark" ? "#38CB89" : "#2C3E50",
-                    fontWeight: 600,
-                    textTransform: "none",
-                    transition: "all 0.3s ease",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow:
-                      mode === "dark" ? "0 0 8px rgba(56,203,137,0.4)" : "none",
-                    "&:hover": {
-                      borderColor: "#38CB89",
-                      color: "#38CB89",
-                      transform: "translateY(-2px) scale(1.03)",
-                      boxShadow: "0 4px 12px rgba(56,203,137,0.3)",
-                    },
-                  }}
+            {/* Search Functionality: Icon and conditionally shown TextField */}
+            <ClickAwayListener onClickAway={() => setShowSearch(false)}>
+              <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+                
+                {/* Search TextField (يظهر عند الضغط على الأيقونة) */}
+                <Slide 
+                  direction={dir === "rtl" ? "right" : "left"} 
+                  in={showSearch} 
+                  mountOnEnter 
+                  unmountOnExit
                 >
-                  {t("SignIn")}
-                </Button>
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    value={searchValue}
+                    onChange={handleSearchChange}
+                    placeholder={t("Search")}
+                    sx={{
+                        flexShrink: 1, 
+                        minWidth: '100px', 
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "30px",
+                          fontSize: "0.9rem",
+                          width: "200px", 
+                          bgcolor: mode === "dark" ? "#2C2C2C" : "#F3F3F3",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                        },
+                      }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon sx={{ color: colors.secondaryText }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Slide>
 
-                <Button
-                  component={NavLink}
-                  to="/register"
-                  variant="contained"
-                  sx={{
-                    borderRadius: "30px",
-                    padding: "6px 25px",
-                    fontWeight: 600,
-                    textTransform: "none",
-                    background:
-                      "linear-gradient(135deg, #38CB89 0%, #2C3E50 100%)",
-                    color: "#fff",
-                    transition: "all 0.3s ease",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow:
-                      mode === "dark"
-                        ? "0 0 10px rgba(56,203,137,0.6)"
-                        : "0 0 6px rgba(56,203,137,0.3)",
-                    "&:hover": {
-                      background:
-                        "linear-gradient(135deg, #2C3E50 0%, #38CB89 100%)",
-                      transform: "translateY(-2px) scale(1.03)",
-                      boxShadow: "0 4px 12px rgba(56,203,137,0.4)",
-                    },
-                    animation: "pulse 3s infinite",
-                    "@keyframes pulse": {
-                      "0%": { transform: "scale(1)" },
-                      "50%": { transform: "scale(1.05)" },
-                      "100%": { transform: "scale(1)" },
-                    },
-                  }}
+                {/* Search Icon (يبقى ظاهراً دائماً) */}
+                <IconButton 
+                  onClick={() => setShowSearch(!showSearch)} 
+                  sx={{ color: colors.text, zIndex: 1 }} 
                 >
-                  {t("SignUp")}
-                </Button>
-              </Box>
-            ) : (
-              <>
-                <IconButton
-                  sx={{ ml: 1, color: colors.text }}
-                  onClick={(e) => setAnchorElUser(e.currentTarget)}
-                >
-                  <AccountCircleIcon />
+                  <SearchIcon />
                 </IconButton>
-                <Menu
-                  anchorEl={anchorElUser}
-                  open={Boolean(anchorElUser)}
-                  onClose={() => setAnchorElUser(null)}
-                  MenuListProps={{ dir }}
-                >
-                  <MenuItem onClick={() => setAnchorElUser(null)}>
-                    {t("Profile")}
+              </Box>
+            </ClickAwayListener>
+
+
+            {/* Profile Menu */}
+            <IconButton onClick={(e) => setAnchorProfile(e.currentTarget)}>
+              <Avatar sx={{ width: 35, height: 35, bgcolor: colors.primary }}>
+                <PersonIcon />
+              </Avatar>
+            </IconButton>
+            <Menu
+              anchorEl={anchorProfile}
+              open={Boolean(anchorProfile)}
+              onClose={() => setAnchorProfile(null)}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+            >
+              <MenuItem onClick={changeLanguage}>
+                <LanguageIcon sx={{ mr: 1 }} />
+                {i18n.language === "AR" ? "English" : "العربية"}
+              </MenuItem>
+              <MenuItem onClick={toggleTheme}>
+
+                {mode === "dark" ? <Brightness7Icon sx={{ mr: 1 }} /> : <Brightness4Icon sx={{ mr: 1 }} />}
+                {mode === "dark" ? t("LightMode") : t("DarkMode")}
+              </MenuItem>
+              <Divider />
+              {!isLoggedIn ? (
+                <>
+                  <MenuItem component={NavLink} to="/login">
+                    {t("SignIn")}
+                  </MenuItem>
+                  <MenuItem component={NavLink} to="/register">
+                    {t("SignUp")}
+                  </MenuItem>
+                </>
+              ) : (
+                <>
+                  <MenuItem component={NavLink} to="/profile">
+                    <AccountCircleIcon sx={{ mr: 1 }} /> {t("Profile")}
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
-                    <ListItemIcon>
-                      <LogoutIcon fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText primary={t("Logout")} />
+                    <LogoutIcon sx={{ mr: 1 }} /> {t("Logout")}
                   </MenuItem>
-                </Menu>
-              </>
-            )}
+                </>
+              )}
+            </Menu>
 
             <IconButton
-              edge="end"
               sx={{ display: { xs: "flex", md: "none" }, color: colors.text }}
-              onClick={toggleDrawer(true)}
+              onClick={() => setMobileOpen(true)}
             >
               <MenuIcon />
             </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
+
+      <Drawer anchor={dir === "rtl" ? "right" : "left"} open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        {drawer}
+      </Drawer>
     </Box>
   );
 }

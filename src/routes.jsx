@@ -7,12 +7,12 @@ import ForgotPassword from "./auth/forgotPassword/ForgotPassword";
 import ResetPassword from "./auth/resetPassword/ResetPassword";
 import VerifyCode from "./auth/verifyCode/VerifyCode";
 import ContactUs from "./pages/contactUs/ContactUs";
-import Categories from "./pages/categories/Categories";
 import Cart from "./pages/cart/Cart";
 import AboutUs from "./pages/aboutUs/AboutUs";
 import Products from "./pages/products/Products";
 import ProtectedRouter from "./components/protected/ProtectedRouter";
 import ProductDetailes from "./components/products/ProductDetails";
+import Profile from "./pages/profile/Profile";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +26,6 @@ const router = createBrowserRouter([
       { path: "reset-password", element: <ResetPassword /> },
       { path: "Verify_Code", element: <VerifyCode /> },
       { path: "contactUs", element: <ContactUs /> },
-      { path: "categories", element: <Categories /> },
       {
         path: "cart",
         element: (
@@ -37,7 +36,15 @@ const router = createBrowserRouter([
       },
       { path: "aboutUs", element: <AboutUs /> },
       { path: "products", element: <Products /> },
-      { path: "product/:id", element: <ProductDetailes /> },
+      { path: "product/:id", element: <ProductDetailes /> }, 
+      {
+  path: "profile",
+  element: (
+    <ProtectedRouter> 
+      <Profile/>
+    </ProtectedRouter>
+  ),
+},
     ],
   },
 ]);
