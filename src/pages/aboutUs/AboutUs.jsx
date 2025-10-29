@@ -69,7 +69,6 @@ export default function AboutUs() {
   return (
     <Box sx={{ bgcolor: colors.bg, color: colors.text, minHeight: "100vh", py: 6 }}>
       <Container maxWidth="lg">
-        {/* 🌟 Hero Section */}
         <Box
           sx={{
             position: "relative",
@@ -125,7 +124,6 @@ export default function AboutUs() {
           </Box>
         </Box>
 
-        {/* 🏢 Who We Are */}
         <Grid container spacing={6} alignItems="center" sx={{ mb: 10 }}>
           <Grid item xs={12} md={6}>
             <Box
@@ -163,7 +161,6 @@ export default function AboutUs() {
           </Grid>
         </Grid>
 
-        {/* 💎 Core Values */}
         <Box sx={{ textAlign: "center", mb: 10 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 6 }}>
             Our Beliefs and Core Values
@@ -199,7 +196,6 @@ export default function AboutUs() {
           </Grid>
         </Box>
 
-        {/* 👥 Team Section */}
         <Box sx={{ textAlign: "center", mb: 8 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 6 }}>
             Meet the MOMENT Team

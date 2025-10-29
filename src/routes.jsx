@@ -13,6 +13,7 @@ import Products from "./pages/products/Products";
 import ProtectedRouter from "./components/protected/ProtectedRouter";
 import ProductDetailes from "./components/products/ProductDetails";
 import Profile from "./pages/profile/Profile";
+import Checkout from "./pages/checkout/Checkout";
 
 const router = createBrowserRouter([
   {
@@ -34,17 +35,21 @@ const router = createBrowserRouter([
           </ProtectedRouter>
         ),
       },
+      {
+        path: "checkout", element: <Checkout /> 
+
+      },
       { path: "aboutUs", element: <AboutUs /> },
       { path: "products", element: <Products /> },
-      { path: "product/:id", element: <ProductDetailes /> }, 
+      { path: "product/:id", element: <ProductDetailes /> },
       {
-  path: "profile",
-  element: (
-    <ProtectedRouter> 
-      <Profile/>
-    </ProtectedRouter>
-  ),
-},
+        path: "profile",
+        element: (
+          <ProtectedRouter>
+            <Profile />
+          </ProtectedRouter>
+        ),
+      },
     ],
   },
 ]);
