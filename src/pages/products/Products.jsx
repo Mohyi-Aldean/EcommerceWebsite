@@ -15,7 +15,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css/effect-coverflow";
 import CloseIcon from "@mui/icons-material/Close";
-import "@fontsource/roboto/700.css"; // Elegant font for title
+import "@fontsource/roboto/700.css";
 
 export default function Products() {
   const [products, setProducts] = useState([]);

@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Card,
   CardMedia,
+  useTheme,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { motion } from "framer-motion";
@@ -28,6 +29,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleChange = (e) =>
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -55,9 +57,7 @@ export default function Login() {
     try {
       setLoading(true);
       const response = await loginUser(values.email, values.password);
-
       localStorage.setItem("token", response.data.token);
-
       navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid email or password.", {
@@ -77,8 +77,9 @@ export default function Login() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          bgcolor: "#f8f9fa",
+          bgcolor: theme.palette.background.default,
           p: 2,
+          transition: "background-color 0.3s ease",
         }}
       >
         <motion.div
@@ -98,23 +99,30 @@ export default function Login() {
               width: "900px",
               maxWidth: "95%",
               borderRadius: 4,
-              boxShadow: "0px 8px 30px rgba(0,0,0,0.15)",
+              boxShadow: theme.shadows[6],
               overflow: "hidden",
+              bgcolor: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+              transition: "all 0.3s ease",
             }}
           >
+            {/* Left side image */}
             <Box
               sx={{
                 flex: 1,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                bgcolor: "#f8f9fa",
+                bgcolor:
+                  theme.palette.mode === "dark"
+                    ? "rgba(255,255,255,0.05)"
+                    : "#f0f0f0",
               }}
             >
               <CardMedia
                 component="img"
                 image={momentImg}
-                alt="MomentImg"
+                alt="Login Image"
                 sx={{
                   width: "100%",
                   height: "100%",
@@ -124,6 +132,7 @@ export default function Login() {
               />
             </Box>
 
+            {/* Right side form */}
             <Box
               sx={{
                 flex: 1,
@@ -131,7 +140,8 @@ export default function Login() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                bgcolor: "#fff",
+                bgcolor: theme.palette.background.paper,
+                color: theme.palette.text.primary,
               }}
               component="form"
               onSubmit={handleSubmit}
@@ -140,20 +150,25 @@ export default function Login() {
                 variant="h4"
                 fontWeight="bold"
                 mb={2}
-                sx={{ color: "#222" }}
+                sx={{
+                  color:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.primary.light
+                      : "#222",
+                }}
               >
                 Sign In
               </Typography>
 
               <Typography variant="body2" color="text.secondary" mb={3}>
-                Don't have an account yet?{" "}
+                Don’t have an account yet?{" "}
                 <Link
                   component={RouterLink}
                   to="/register"
                   sx={{
                     cursor: "pointer",
                     fontWeight: "bold",
-                    color: "#38CB89",
+                    color: theme.palette.primary.main,
                   }}
                 >
                   Sign Up
@@ -163,19 +178,26 @@ export default function Login() {
               <TextField
                 fullWidth
                 label="Email address"
-                variant="standard"
+                variant="filled"
                 name="email"
                 value={values.email}
                 onChange={handleChange}
                 error={Boolean(errors.email)}
                 helperText={errors.email}
                 margin="normal"
+                sx={{
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.08)"
+                      : "#fafafa",
+                  borderRadius: 1,
+                }}
               />
 
               <TextField
                 fullWidth
                 label="Password"
-                variant="standard"
+                variant="filled"
                 name="password"
                 type={showPassword ? "text" : "password"}
                 value={values.password}
@@ -183,12 +205,17 @@ export default function Login() {
                 error={Boolean(errors.password)}
                 helperText={errors.password}
                 margin="normal"
+                sx={{
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? "rgba(255,255,255,0.08)"
+                      : "#fafafa",
+                  borderRadius: 1,
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -201,16 +228,27 @@ export default function Login() {
                 justifyContent="space-between"
                 alignItems="center"
                 my={2}
-                color="text.secondary"
               >
-                <FormControlLabel control={<Checkbox />} label="Remember me" />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{
+                        color: theme.palette.text.secondary,
+                        "&.Mui-checked": {
+                          color: theme.palette.primary.main,
+                        },
+                      }}
+                    />
+                  }
+                  label="Remember me"
+                />
                 <Link
                   component={RouterLink}
                   to="/forgot-password"
                   sx={{
                     cursor: "pointer",
                     fontSize: "0.9rem",
-                    color: "#141718",
+                    color: theme.palette.primary.main,
                   }}
                 >
                   Forgot password?
@@ -223,14 +261,22 @@ export default function Login() {
                 variant="contained"
                 sx={{
                   mt: 1,
-                  bgcolor: "#000",
-                  color: "#fff",
                   py: 1.2,
                   fontSize: "1rem",
                   fontWeight: "bold",
                   textTransform: "none",
-                  borderRadius: 1,
-                  "&:hover": { bgcolor: "#333" },
+                  borderRadius: 2,
+                  backgroundColor:
+                    theme.palette.mode === "dark"
+                      ? theme.palette.primary.dark
+                      : theme.palette.primary.main,
+                  "&:hover": {
+                    backgroundColor:
+                      theme.palette.mode === "dark"
+                        ? theme.palette.primary.main
+                        : theme.palette.primary.dark,
+                  },
+                  transition: "all 0.3s ease",
                 }}
                 disabled={loading}
               >

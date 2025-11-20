@@ -1,17 +1,14 @@
 import { createTheme } from '@mui/material/styles';
 
-// تعريف الألوان الأساسية لـ 3legant Style: حيادي مع لمسات دافئة
-const neutralBlack = '#141718'; // أسود عميق للنصوص والعناوين
-const neutralWhite = '#FFFFFF'; // أبيض ناصع للخلفيات
-const neutralGray = '#6C7275'; // رمادي للنصوص الثانوية والحدود
-const accentColor = '#38CB89'; // لون لهجة أخضر حيوي
+const neutralBlack = '#141718'; 
+const neutralWhite = '#FFFFFF'; 
+const neutralGray = '#6C7275'; 
+const accentColor = '#38CB89'; 
 
-// تعريف نظام الخطوط - Poppins و Roboto هما خياران ممتازين
 const fontFamily = ['Poppins', 'Roboto', 'sans-serif'].join(',');
 
 const theme = (mode) =>
   createTheme({
-    // 🎨 لوحة الألوان الجديدة
     palette: {
       mode,
       primary: {
@@ -37,7 +34,6 @@ const theme = (mode) =>
       },
       divider: mode === 'light' ? '#E8ECEF' : '#333333',
     },
-    // ✍️ إعدادات الطباعة (Typography)
     typography: {
       fontFamily: fontFamily,
       h1: { fontSize: '3.5rem', fontWeight: 700 },
@@ -48,7 +44,6 @@ const theme = (mode) =>
       body1: { fontSize: '1rem' },
       body2: { fontSize: '0.9rem', color: neutralGray },
     },
-    // 🔨 تعديلات المكونات (Components Overrides)
     components: {
       MuiButton: {
         defaultProps: {
@@ -63,7 +58,6 @@ const theme = (mode) =>
           },
           containedPrimary: {
             '&:hover': {
-              // تأثير هوفر خفيف على الزر الأساسي (الأسود)
               backgroundColor: neutralGray,
             },
           },
@@ -71,12 +65,11 @@ const theme = (mode) =>
       },
       MuiTextField: {
         defaultProps: {
-          variant: 'outlined', // استخدام Outlined للـ Input
+          variant: 'outlined',
           fullWidth: true,
         },
         styleOverrides: {
           root: {
-            // نمط حقول الإدخال لتتناسب مع التصميم
             marginTop: '16px',
             marginBottom: '8px',
           },
@@ -86,7 +79,7 @@ const theme = (mode) =>
         styleOverrides: {
           root: {
             borderRadius: '12px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)', // ظل خفيف وعصري
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
           },
         },
       },

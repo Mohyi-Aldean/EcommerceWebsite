@@ -97,7 +97,6 @@ export default function VerifyCode() {
               Enter the verification code we sent to your email.
             </Typography>
 
-            {/* حقل الكود */}
             <TextField
               fullWidth
               label="Verification Code"
@@ -108,7 +107,6 @@ export default function VerifyCode() {
               margin="normal"
             />
 
-            {/* زر التحقق */}
             <Button
               type="submit"
               fullWidth
@@ -135,8 +133,6 @@ export default function VerifyCode() {
           </Card>
         </motion.div>
       </Box>
-
-      {/* Toast Container */}
       <ToastContainer />
     </>
   );

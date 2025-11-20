@@ -14,8 +14,6 @@ import { motion } from "framer-motion";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
-// ✅ استدعاء الـ API من UserService
 import { resetPassword } from "../../api/UserService";
 
 export default function ResetPassword() {
@@ -83,7 +81,7 @@ export default function ResetPassword() {
         >
           <Card
             sx={{
-              width: "500px", // ✅ كبرنا الكارد
+              width: "500px",
               borderRadius: 4,
               boxShadow: "0px 8px 30px rgba(0,0,0,0.15)",
               p: 5,
@@ -101,7 +99,6 @@ export default function ResetPassword() {
               Reset Password
             </Typography>
 
-            {/* New Password */}
             <TextField
               fullWidth
               label="New Password"
@@ -121,8 +118,6 @@ export default function ResetPassword() {
                 ),
               }}
             />
-
-            {/* Confirm Password */}
             <TextField
               fullWidth
               label="Confirm Password"
@@ -142,8 +137,6 @@ export default function ResetPassword() {
                 ),
               }}
             />
-
-            {/* Submit Button */}
             <Button
               type="submit"
               fullWidth

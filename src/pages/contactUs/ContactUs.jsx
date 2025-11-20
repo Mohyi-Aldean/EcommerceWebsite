@@ -77,7 +77,6 @@ export default function ContactUs() {
       sx={{ bgcolor: colors.bg, color: colors.text, minHeight: "100vh", py: 6 }}
     >
       <Container maxWidth="lg">
-        {/* Header */}
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography
             variant="h3"
@@ -92,7 +91,6 @@ export default function ContactUs() {
           </Typography>
         </Box>
 
-        {/* Contact Section */}
         <Card
           sx={{
             bgcolor: colors.cardBg,
@@ -103,13 +101,12 @@ export default function ContactUs() {
           }}
         >
           <Grid container spacing={5}>
-            {/* Left: Info + Map */}
             <Grid
               item
               xs={12}
               md={5}
               sx={{
-                pr: { md: 4 }, // يضيف فراغ داخلي إلى اليمين (Padding Right)
+                pr: { md: 4 },
               }}
             >
               <Typography
@@ -119,7 +116,6 @@ export default function ContactUs() {
                 Contact Us Directly
               </Typography>
 
-              {/* Contact Info */}
               <Box sx={{ mb: 4 }}>
                 <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                   <LocationOn sx={{ color: colors.primary, mr: 1 }} />
@@ -143,7 +139,6 @@ export default function ContactUs() {
                 </Box>
               </Box>
 
-              {/* Google Map */}
               <Box
                 sx={{
                   width: "100%",
@@ -165,7 +160,6 @@ export default function ContactUs() {
               </Box>
             </Grid>
 
-            {/* Right: Form */}
             <Grid
               item
               xs={12}
@@ -183,7 +177,6 @@ export default function ContactUs() {
                 onSubmit={handleSubmit}
                 sx={{ display: "flex", flexDirection: "column", gap: 2 }}
               >
-                {/* Name */}
                 <TextField
                   fullWidth
                   required
@@ -203,7 +196,6 @@ export default function ContactUs() {
                   }}
                 />
 
-                {/* Email */}
                 <TextField
                   fullWidth
                   required
@@ -224,7 +216,6 @@ export default function ContactUs() {
                   }}
                 />
 
-                {/* Subject */}
                 <TextField
                   fullWidth
                   required
@@ -244,7 +235,6 @@ export default function ContactUs() {
                   }}
                 />
 
-                {/* Message */}
                 <TextField
                   fullWidth
                   required
@@ -259,7 +249,6 @@ export default function ContactUs() {
                   }}
                 />
 
-                {/* Button */}
                 <Button
                   type="submit"
                   variant="contained"
@@ -281,7 +270,6 @@ export default function ContactUs() {
           </Grid>
         </Card>
 
-        {/* FAQ Section */}
         <Box sx={{ mt: 8, pb: 4 }}>
           <Typography
             variant="h4"

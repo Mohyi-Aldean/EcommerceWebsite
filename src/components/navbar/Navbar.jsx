@@ -24,9 +24,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
-// ❌ الخطأ كان هنا: '@mui/@mui/icons-material/Brightness7'
-// ✅ التصحيح هو: '@mui/icons-material/Brightness7'
-import Brightness7Icon from "@mui/icons-material/Brightness7"; 
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import Inventory2Icon from "@mui/icons-material/Inventory2";
@@ -52,7 +50,9 @@ export default function Navbar({ isLoggedIn }) {
   const [dir, setDir] = useState(i18n.language === "AR" ? "rtl" : "ltr");
   const [anchorProfile, setAnchorProfile] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
-  const [searchValue, setSearchValue] = useState(localStorage.getItem("search") || "");
+  const [searchValue, setSearchValue] = useState(
+    localStorage.getItem("search") || ""
+  );
 
   useEffect(() => {
     setDir(i18n.language === "AR" ? "rtl" : "ltr");
@@ -78,7 +78,6 @@ export default function Navbar({ isLoggedIn }) {
     const value = e.target.value;
     setSearchValue(value);
     localStorage.setItem("search", value);
-    // يمكنك إضافة منطق البحث هنا، مثل إعادة التوجيه إلى صفحة النتائج أو فلترة القائمة
   };
 
   const handleLogout = () => {
@@ -94,10 +93,21 @@ export default function Navbar({ isLoggedIn }) {
   };
 
   const drawer = (
-    <Box sx={{ width: 250, bgcolor: colors.bg, height: "100%", color: colors.text }}>
+    <Box
+      sx={{
+        width: 250,
+        bgcolor: colors.bg,
+        height: "100%",
+        color: colors.text,
+      }}
+    >
       <Typography
         variant="h6"
-        sx={{ p: 2, fontWeight: 700, borderBottom: `1px solid ${colors.secondaryText}` }}
+        sx={{
+          p: 2,
+          fontWeight: 700,
+          borderBottom: `1px solid ${colors.secondaryText}`,
+        }}
       >
         MOMENT.
       </Typography>
@@ -135,7 +145,6 @@ export default function Navbar({ isLoggedIn }) {
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
-          {/* Logo */}
           <Typography
             variant="h6"
             component={NavLink}
@@ -151,7 +160,6 @@ export default function Navbar({ isLoggedIn }) {
             MOMENT.
           </Typography>
 
-          {/* Center Links */}
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -182,23 +190,27 @@ export default function Navbar({ isLoggedIn }) {
             ))}
           </Box>
 
-          {/* Left Section (Icons) */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            
-            {/* Cart Icon - تم وضعه بجانب البحث */}
-            <IconButton component={NavLink} to="/cart" sx={{ color: colors.text }}>
+            <IconButton
+              component={NavLink}
+              to="/cart"
+              sx={{ color: colors.text }}
+            >
               <ShoppingBagOutlinedIcon />
             </IconButton>
 
-            {/* Search Functionality: Icon and conditionally shown TextField */}
             <ClickAwayListener onClickAway={() => setShowSearch(false)}>
-              <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-                
-                {/* Search TextField (يظهر عند الضغط على الأيقونة) */}
-                <Slide 
-                  direction={dir === "rtl" ? "right" : "left"} 
-                  in={showSearch} 
-                  mountOnEnter 
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  position: "relative",
+                }}
+              >
+                <Slide
+                  direction={dir === "rtl" ? "right" : "left"}
+                  in={showSearch}
+                  mountOnEnter
                   unmountOnExit
                 >
                   <TextField
@@ -208,16 +220,16 @@ export default function Navbar({ isLoggedIn }) {
                     onChange={handleSearchChange}
                     placeholder={t("Search")}
                     sx={{
-                        flexShrink: 1, 
-                        minWidth: '100px', 
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "30px",
-                          fontSize: "0.9rem",
-                          width: "200px", 
-                          bgcolor: mode === "dark" ? "#2C2C2C" : "#F3F3F3",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                        },
-                      }}
+                      flexShrink: 1,
+                      minWidth: "100px",
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "30px",
+                        fontSize: "0.9rem",
+                        width: "200px",
+                        bgcolor: mode === "dark" ? "#2C2C2C" : "#F3F3F3",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                      },
+                    }}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -228,18 +240,15 @@ export default function Navbar({ isLoggedIn }) {
                   />
                 </Slide>
 
-                {/* Search Icon (يبقى ظاهراً دائماً) */}
-                <IconButton 
-                  onClick={() => setShowSearch(!showSearch)} 
-                  sx={{ color: colors.text, zIndex: 1 }} 
+                <IconButton
+                  onClick={() => setShowSearch(!showSearch)}
+                  sx={{ color: colors.text, zIndex: 1 }}
                 >
                   <SearchIcon />
                 </IconButton>
               </Box>
             </ClickAwayListener>
 
-
-            {/* Profile Menu */}
             <IconButton onClick={(e) => setAnchorProfile(e.currentTarget)}>
               <Avatar sx={{ width: 35, height: 35, bgcolor: colors.primary }}>
                 <PersonIcon />
@@ -257,8 +266,11 @@ export default function Navbar({ isLoggedIn }) {
                 {i18n.language === "AR" ? "English" : "العربية"}
               </MenuItem>
               <MenuItem onClick={toggleTheme}>
-
-                {mode === "dark" ? <Brightness7Icon sx={{ mr: 1 }} /> : <Brightness4Icon sx={{ mr: 1 }} />}
+                {mode === "dark" ? (
+                  <Brightness7Icon sx={{ mr: 1 }} />
+                ) : (
+                  <Brightness4Icon sx={{ mr: 1 }} />
+                )}
                 {mode === "dark" ? t("LightMode") : t("DarkMode")}
               </MenuItem>
               <Divider />
@@ -293,7 +305,11 @@ export default function Navbar({ isLoggedIn }) {
         </Toolbar>
       </AppBar>
 
-      <Drawer anchor={dir === "rtl" ? "right" : "left"} open={mobileOpen} onClose={() => setMobileOpen(false)}>
+      <Drawer
+        anchor={dir === "rtl" ? "right" : "left"}
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+      >
         {drawer}
       </Drawer>
     </Box>
